@@ -34,8 +34,10 @@ class FileController {
       const file = await FileModel.findById(file_id);
       const filePath = file.path;
 
+      // console.log(filePath);
       res.sendFile(filePath);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }

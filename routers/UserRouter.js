@@ -2,12 +2,13 @@ const UserController = require("../controllers/UserController");
 const AuthMiddleware = require("../middlewares/AuthMiddleware");
 const { body } = require("express-validator");
 const ValidationMiddleware = require("../middlewares/ValidationMiddleware");
+const SessionMiddleware = require("../middlewares/SessionMiddleware");
 
 const Router = require("express").Router;
 
 const router = new Router();
 
-router.get("/refresh", UserController.refresh);
+router.get("/refresh", SessionMiddleware, UserController.refresh);
 router.post("/login", UserController.login);
 router.post("/logout", UserController.logout);
 router.post(
