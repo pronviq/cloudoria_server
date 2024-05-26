@@ -21,7 +21,8 @@ class UserService {
     const payload = new UserDto(user);
 
     const tokens = await TokenService.generateTokens({ ...payload });
-    await TokenModel.updateRefresh(payload.email, tokens.refresh);
+    await TokenModel.removeRefresh(refresh);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
 
     return { ...tokens, ...payload };
   }
@@ -36,12 +37,12 @@ class UserService {
     const payload = new UserDto(user);
 
     const tokens = await TokenService.generateTokens({ ...payload });
-    await TokenModel.updateRefresh(payload.email, tokens.refresh);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
 
     return { ...tokens, ...payload };
   }
 
-  async registration(email, username, password, gender) {
+  async registration(email, username, password, gender, ip) {
     const mailCandidate = await UserModel.findUser(email);
     const nameCandidate = await UserModel.findUser(username);
     if (!email || !username || !password || !gender)
@@ -50,11 +51,11 @@ class UserService {
     if (nameCandidate) throw ApiError.BadRequest("Такое имя уже занято");
 
     const hashedPassword = await bcrypt.hash(password, 3);
-    const user = await UserModel.addUser(email, username, hashedPassword, gender);
+    const user = await UserModel.addUser(email, username, hashedPassword, gender, null, ip);
     const payload = new UserDto(user);
 
     const tokens = await TokenService.generateTokens({ ...payload });
-    await TokenModel.updateRefresh(payload.email, tokens.refresh);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
 
     const dir = await FileService.createRootDir(payload.id);
     await UserModel.updateRootDirectory(dir.id, payload.id);

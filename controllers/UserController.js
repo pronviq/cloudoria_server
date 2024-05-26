@@ -1,6 +1,4 @@
-const { validationResult } = require("express-validator");
 const UserService = require("../services/UserService");
-const ApiError = require("../exceptions/ApiError");
 const TokenModel = require("../models/TokenModel");
 const UserModel = require("../models/UserModel");
 
@@ -10,8 +8,6 @@ const cookieSettings = {
   sameSite: "Strict",
   // secure: true,
 };
-
-// console.log(cookieSettings);
 
 class UserController {
   async updateTheme(req, res, next) {
@@ -56,7 +52,8 @@ class UserController {
   async registration(req, res, next) {
     try {
       const { email, username, password, gender } = req.body;
-      const user = await UserService.registration(email, username, password, gender);
+      const ip = req.ip.split(":").pop();
+      const user = await UserService.registration(email, username, password, gender, ip);
 
       res
         .cookie("refreshToken", user.refresh, {
@@ -72,7 +69,6 @@ class UserController {
   async refresh(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      // console.log("refresh", refreshToken);
       const user = await UserService.refresh(refreshToken);
 
       res

@@ -1,4 +1,4 @@
 module.exports = function (req, res, next) {
-  console.log(req.rawHeaders);
+  const ip = req.ip.split(":").pop();
   next();
 };

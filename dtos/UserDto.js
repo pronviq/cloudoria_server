@@ -8,6 +8,7 @@ module.exports = class UserDto {
   gender;
   theme;
   root_directory;
+  ip;
 
   constructor(model) {
     this.id = model.id;
@@ -19,5 +20,6 @@ module.exports = class UserDto {
     this.gender = model.gender;
     this.theme = model.theme;
     this.root_directory = model.root_directory;
+    this.ip = model.ip;
   }
 };

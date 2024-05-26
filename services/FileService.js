@@ -15,8 +15,6 @@ class FileService {
 
     const filePath = path.join(parent.path, "/", name);
     if (fs.existsSync(filePath)) throw ApiError.BadRequest("Файл уже существует");
-
-    // console.log(file.size);
     await FileModel.updateSize(user_id, file.size, "increase");
 
     const fileDto = new FileDto({

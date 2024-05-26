@@ -72,8 +72,12 @@ class FileController {
       const { parent_file, name } = req.body;
       const user_id = req.user.id;
       lock.acquire("memory", async () => {
-        const file = await FileService.uploadFile(uploadFile, user_id, parent_file, name);
-        res.status(200).json(file);
+        try {
+          const file = await FileService.uploadFile(uploadFile, user_id, parent_file, name);
+          res.status(200).json(file);
+        } catch (error) {
+          next(error);
+        }
       });
     } catch (error) {
       next(error);
