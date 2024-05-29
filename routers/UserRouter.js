@@ -9,6 +9,8 @@ const Router = require("express").Router;
 const router = new Router();
 
 router.get("/refresh", SessionMiddleware, UserController.refresh);
+router.get("/getsessions", AuthMiddleware, UserController.getSessions);
+router.get("/terminate", AuthMiddleware, UserController.terminateSession);
 router.post("/login", UserController.login);
 router.post("/logout", UserController.logout);
 router.post(

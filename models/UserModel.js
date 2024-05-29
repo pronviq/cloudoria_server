@@ -46,7 +46,6 @@ class UserModel {
 
   async addUser(email, username, hashedPassword, gender, root_directory, ip) {
     try {
-      console.log(email, username, hashedPassword, gender, root_directory, ip);
       const data = await db.query(
         "insert into users (email, username, password, gender, root_directory, ip) values ($1, $2, $3, $4, $5, $6) returning *",
         [email, username, hashedPassword, gender, root_directory, ip]

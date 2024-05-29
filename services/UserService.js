@@ -7,7 +7,7 @@ const TokenModel = require("../models/TokenModel");
 const FileService = require("./FileService");
 
 class UserService {
-  async refresh(refresh) {
+  async refresh(refresh, ip, browser, os) {
     if (!refresh) throw ApiError.Unathorized();
 
     const userData = TokenService.validateRefresh(refresh);
@@ -22,12 +22,12 @@ class UserService {
 
     const tokens = await TokenService.generateTokens({ ...payload });
     await TokenModel.removeRefresh(refresh);
-    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, ip, payload.email, browser, os);
 
     return { ...tokens, ...payload };
   }
 
-  async login(user_info, password) {
+  async login(user_info, password, ip, browser, os) {
     const user = await UserModel.findUser(user_info);
     if (!user) throw ApiError.BadRequest("Неверное имя или пароль");
 
@@ -37,12 +37,12 @@ class UserService {
     const payload = new UserDto(user);
 
     const tokens = await TokenService.generateTokens({ ...payload });
-    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, ip, payload.email, browser, os);
 
     return { ...tokens, ...payload };
   }
 
-  async registration(email, username, password, gender, ip) {
+  async registration(email, username, password, gender, ip, browser, os) {
     const mailCandidate = await UserModel.findUser(email);
     const nameCandidate = await UserModel.findUser(username);
     if (!email || !username || !password || !gender)
@@ -55,7 +55,7 @@ class UserService {
     const payload = new UserDto(user);
 
     const tokens = await TokenService.generateTokens({ ...payload });
-    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email);
+    await TokenModel.addRefresh(payload.id, tokens.refresh, payload.ip, payload.email, browser, os);
 
     const dir = await FileService.createRootDir(payload.id);
     await UserModel.updateRootDirectory(dir.id, payload.id);

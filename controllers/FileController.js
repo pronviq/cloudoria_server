@@ -1,9 +1,5 @@
-const { validationResult } = require("express-validator");
-const FileDto = require("../dtos/FileDto");
 const ApiError = require("../exceptions/ApiError");
 const FileModel = require("../models/FileModel");
-const LogModel = require("../models/LogModel");
-const UserModel = require("../models/UserModel");
 const FileService = require("../services/FileService");
 const AsyncLock = require("async-lock");
 const TokenService = require("../services/TokenService");
@@ -26,10 +22,10 @@ class FileController {
     try {
       const { file_id } = req.params;
       const { refreshToken } = req.cookies;
-      if (!refreshToken) next(ApiError.Unathorized());
+      if (!refreshToken) throw ApiError.Unathorized();
 
       const user = TokenService.validateRefresh(refreshToken);
-      if (!user) next(ApiError.Unathorized());
+      if (!user) throw ApiError.Unathorized();
 
       const file = await FileModel.findById(file_id);
       const filePath = file.path;
@@ -37,7 +33,6 @@ class FileController {
       // console.log(filePath);
       res.sendFile(filePath);
     } catch (error) {
-      console.log(error);
       next(error);
     }
   }
@@ -71,7 +66,7 @@ class FileController {
       const uploadFile = req.files.file;
       const { parent_file, name } = req.body;
       const user_id = req.user.id;
-      lock.acquire("memory", async () => {
+      lock.acquire("upload", async () => {
         try {
           const file = await FileService.uploadFile(uploadFile, user_id, parent_file, name);
           res.status(200).json(file);
@@ -98,9 +93,15 @@ class FileController {
   async deleteFile(req, res, next) {
     try {
       const id = req.query.id;
-      await FileService.deleteFile(id);
 
-      res.status(200).json();
+      lock.acquire("delete", async () => {
+        try {
+          await FileService.deleteFile(id);
+          res.status(200).json();
+        } catch (error) {
+          next(error);
+        }
+      });
     } catch (error) {
       next(error);
     }

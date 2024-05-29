@@ -2,7 +2,9 @@ CREATE TABLE tokens (
     id SERIAL PRIMARY KEY,
     token VARCHAR(512) NOT NULL,
     ip VARCHAR(255) NOT NULL,
-	timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc'::text)
+		timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc'::text),
+    browser varchar(128),
+    os varchar(128)
 );
 
 "
