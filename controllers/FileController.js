@@ -4,8 +4,24 @@ const FileService = require("../services/FileService");
 const AsyncLock = require("async-lock");
 const TokenService = require("../services/TokenService");
 const lock = new AsyncLock();
+const fs = require("fs");
 
 class FileController {
+  async downloadFile(req, res, next) {
+    try {
+      const { file_id } = req.query;
+
+      const file = await FileModel.findById(file_id);
+      if (!file) next(ApiError.BadRequest("Файл не найден"));
+      // console.log(file);
+      if (!fs.existsSync(file.path)) next(ApiError.BadRequest("Файл не найден"));
+
+      res.download(file.path);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async searchFiles(req, res, next) {
     try {
       const { q } = req.query;

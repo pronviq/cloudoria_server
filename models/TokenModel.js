@@ -1,6 +1,10 @@
 const db = require("../database/postgresql");
 
 class TokenModel {
+  async clearTokens(user_id) {
+    await db.query("delete from tokens where user_id = $1", [user_id]);
+  }
+
   async terminateSession(session_id, user_id) {
     try {
       const data = await db.query("delete from tokens where id = $1 and user_id = $2 returning *", [

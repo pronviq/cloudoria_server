@@ -6,6 +6,7 @@ const Router = require("express").Router;
 const router = new Router();
 
 router.get("/getfiles", AuthMiddleware, FileController.getFiles);
+router.get("/download", AuthMiddleware, FileController.downloadFile);
 router.get("/getfavorites", AuthMiddleware, FileController.getFavorites);
 router.get("/gettrash", AuthMiddleware, FileController.getTrash);
 router.get("/getpreview/:file_id", FileController.getPreview);

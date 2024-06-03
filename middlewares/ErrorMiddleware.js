@@ -10,7 +10,8 @@ module.exports = async function (error, req, res, next) {
       status = 500;
     }
 
-    const id = await LogModel.makeLog(status, message);
+    let id;
+    if (status !== 401) id = await LogModel.makeLog(status, message);
 
     if (status === 500) {
       return res.status(500).json(`Internal Server Error || Error ID = ${id}`);
@@ -27,6 +28,6 @@ module.exports = async function (error, req, res, next) {
     return res.status(500).json(`Error ID = ${id}`);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json("Error");
+    // return res.status(500).json("Error");
   }
 };

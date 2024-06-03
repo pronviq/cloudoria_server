@@ -4,7 +4,7 @@ module.exports = class UserDto {
   email;
   disk_space;
   used_space;
-  avatar_path;
+  avatar;
   gender;
   theme;
   root_directory;
@@ -16,7 +16,7 @@ module.exports = class UserDto {
     this.email = model.email;
     this.disk_space = model.disk_space;
     this.used_space = model.used_space;
-    this.avatar_path = model.avatar_path;
+    this.avatar = model.avatar;
     this.gender = model.gender;
     this.theme = model.theme;
     this.root_directory = model.root_directory;

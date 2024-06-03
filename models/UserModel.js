@@ -1,6 +1,20 @@
 const db = require("../database/postgresql");
 
 class UserModel {
+  async deleteAccount(user_id) {
+    await db.query("delete from files where user_id = $1", [user_id]);
+
+    await db.query("delete from users where id = $1", [user_id]);
+  }
+
+  async uploadAvatar(avatarName, user_id) {
+    const data = await db.query("update users set avatar = $1 where id = $2 returning *", [
+      avatarName,
+      user_id,
+    ]);
+    return data.rows[0];
+  }
+
   async updateRootDirectory(root_directory, id) {
     await db.query("update users set root_directory = $1 where id = $2", [root_directory, id]);
   }
@@ -33,12 +47,11 @@ class UserModel {
 
   async findUser(user_info) {
     try {
-      const data = await db.query("select * from users where email = $1 or username = $1", [
+      const data = await db.query("select * from users where username = $1 or email = $1", [
         user_info,
       ]);
-      const rows = data.rows;
 
-      return rows ? rows[0] : null;
+      return data.rows[0];
     } catch (err) {
       throw new Error(err.message);
     }
