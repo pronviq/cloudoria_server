@@ -13,7 +13,6 @@ class FileController {
 
       const file = await FileModel.findById(file_id);
       if (!file) next(ApiError.BadRequest("Файл не найден"));
-      // console.log(file);
       if (!fs.existsSync(file.path)) next(ApiError.BadRequest("Файл не найден"));
 
       res.download(file.path);
